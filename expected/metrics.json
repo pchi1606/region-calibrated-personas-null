@@ -1,0 +1,177 @@
+{
+ "completeness": {
+  "baseline": {
+   "expected": 48,
+   "found": 48,
+   "complete": true
+  },
+  "main": {
+   "expected": 960,
+   "found": 960,
+   "complete": true
+  },
+  "robust": {
+   "expected": 384,
+   "found": 384,
+   "complete": true
+  }
+ },
+ "audit": {
+  "template_hits": 0,
+  "prompt_hits": 0,
+  "gen_hits": 0,
+  "n_gen": 1392
+ },
+ "n_countries": 10,
+ "primary": {
+  "mean_W1_region": 0.30388888888888893,
+  "mean_W1_generic": 0.37583333333333335,
+  "mean_W1_uncalibrated": 0.2941666666666667,
+  "mean_diff_generic_minus_region": 0.07194444444444444,
+  "permutation_p_one_sided": 0.08984375,
+  "decision": "H1 REJECTED",
+  "per_country_W1": {
+   "Iceland": {
+    "region": 0.29166666666666663,
+    "generic": 0.245,
+    "uncalibrated": 0.44166666666666665
+   },
+   "Greece": {
+    "region": 0.3125,
+    "generic": 0.26583333333333337,
+    "uncalibrated": 0.4208333333333333
+   },
+   "Brazil": {
+    "region": 0.3333333333333333,
+    "generic": 0.2866666666666667,
+    "uncalibrated": 0.39999999999999997
+   },
+   "Hungary": {
+    "region": 0.20000000000000004,
+    "generic": 0.2866666666666667,
+    "uncalibrated": 0.39999999999999997
+   },
+   "Pakistan": {
+    "region": 0.13194444444444442,
+    "generic": 0.3241666666666667,
+    "uncalibrated": 0.25416666666666665
+   },
+   "Australia": {
+    "region": 0.3458333333333334,
+    "generic": 0.36583333333333334,
+    "uncalibrated": 0.25416666666666665
+   },
+   "Germany": {
+    "region": 0.17361111111111113,
+    "generic": 0.4241666666666667,
+    "uncalibrated": 0.1375
+   },
+   "Japan": {
+    "region": 0.6666666666666667,
+    "generic": 0.48666666666666664,
+    "uncalibrated": 0.2
+   },
+   "Denmark": {
+    "region": 0.25,
+    "generic": 0.48666666666666664,
+    "uncalibrated": 0.2
+   },
+   "Italy": {
+    "region": 0.3333333333333333,
+    "generic": 0.5866666666666667,
+    "uncalibrated": 0.23333333333333334
+   }
+  }
+ },
+ "secondary_dispersion": {
+  "region": 8.207262582514597,
+  "generic": 10.64978782437675,
+  "ci_region": [
+   2.7905504875676295,
+   13.686172651267551
+  ],
+  "ci_generic": [
+   5.1846659355745865,
+   16.10375253575004
+  ]
+ },
+ "secondary_spearman_region": {
+  "rho": 0.08589118694710286,
+  "p": 0.8134930017397664
+ },
+ "secondary_spearman_generic": {
+  "rho": NaN,
+  "p": NaN
+ },
+ "secondary_ev_gap": {
+  "ev_frac_yes": 0.6666666666666666,
+  "sim_mean_yes_region": 0.6225490196078431,
+  "sim_mean_yes_generic": 0.6866666666666669,
+  "sim_mean_yes_uncalibrated": 0.26666666666666666,
+  "real_mean_yes": 0.4999999999999999
+ },
+ "robustness": {
+  "paraphrase": {
+   "mean_diff": 0.17555555555555558,
+   "per_country": {
+    "Germany": {
+     "region_variant": 0.3263888888888889,
+     "generic_main": 0.4241666666666667
+    },
+    "Italy": {
+     "region_variant": 0.3333333333333333,
+     "generic_main": 0.5866666666666667
+    }
+   }
+  },
+  "seed": {
+   "mean_diff": 0.14777777777777776,
+   "per_country": {
+    "Germany": {
+     "region_variant": 0.27083333333333337,
+     "generic_main": 0.4241666666666667
+    },
+    "Italy": {
+     "region_variant": 0.4444444444444445,
+     "generic_main": 0.5866666666666667
+    }
+   }
+  },
+  "temp03": {
+   "mean_diff": 0.20333333333333334,
+   "per_country": {
+    "Germany": {
+     "region_variant": 0.3125,
+     "generic_main": 0.4241666666666667
+    },
+    "Italy": {
+     "region_variant": 0.2916666666666667,
+     "generic_main": 0.5866666666666667
+    }
+   }
+  },
+  "lambda_only": {
+   "mean_diff": 0.3665277777777778,
+   "per_country": {
+    "Germany": {
+     "region_variant": 0.2152777777777778,
+     "generic_main": 0.4241666666666667
+    },
+    "Italy": {
+     "region_variant": 0.0625,
+     "generic_main": 0.5866666666666667
+    }
+   }
+  }
+ },
+ "sensitivity_sd": {
+  "0.5": {
+   "mean_W1_region": 0.3129166666666667,
+   "mean_W1_generic": 0.38625
+  },
+  "1.5": {
+   "mean_W1_region": 0.3101388888888889,
+   "mean_W1_generic": 0.3695833333333334
+  }
+ }
+}

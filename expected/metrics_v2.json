@@ -1,0 +1,399 @@
+{
+  "completeness": {
+    "baseline": {
+      "expected": 48,
+      "found": 48,
+      "complete": true
+    },
+    "main_region": {
+      "expected": 480,
+      "found": 480,
+      "complete": true
+    },
+    "main_generic_v2": {
+      "expected": 480,
+      "found": 480,
+      "complete": true
+    },
+    "robust": {
+      "expected": 384,
+      "found": 384,
+      "complete": true
+    }
+  },
+  "audit": {
+    "template_hits": 0,
+    "prompt_hits": 0,
+    "gen_hits": 0,
+    "n_gen": 1392
+  },
+  "n_countries": 10,
+  "parse_failure_analysis": {
+    "by_arm": {
+      "generic": {
+        "parse_rate": 0.9125,
+        "n": 480
+      },
+      "region": {
+        "parse_rate": 0.8831018518518519,
+        "n": 864
+      },
+      "uncalibrated": {
+        "parse_rate": 0.9375,
+        "n": 48
+      }
+    },
+    "by_task": {
+      "('generic', 'G_25')": {
+        "parse_rate": 0.9375,
+        "n": 80
+      },
+      "('generic', 'G_45')": {
+        "parse_rate": 0.8125,
+        "n": 80
+      },
+      "('generic', 'G_65')": {
+        "parse_rate": 0.775,
+        "n": 80
+      },
+      "('generic', 'L_140')": {
+        "parse_rate": 0.9875,
+        "n": 80
+      },
+      "('generic', 'L_40')": {
+        "parse_rate": 0.9625,
+        "n": 80
+      },
+      "('generic', 'L_90')": {
+        "parse_rate": 1.0,
+        "n": 80
+      },
+      "('region', 'G_25')": {
+        "parse_rate": 0.8611111111111112,
+        "n": 144
+      },
+      "('region', 'G_45')": {
+        "parse_rate": 0.7430555555555556,
+        "n": 144
+      },
+      "('region', 'G_65')": {
+        "parse_rate": 0.7083333333333334,
+        "n": 144
+      },
+      "('region', 'L_140')": {
+        "parse_rate": 1.0,
+        "n": 144
+      },
+      "('region', 'L_40')": {
+        "parse_rate": 0.9861111111111112,
+        "n": 144
+      },
+      "('region', 'L_90')": {
+        "parse_rate": 1.0,
+        "n": 144
+      },
+      "('uncalibrated', 'G_25')": {
+        "parse_rate": 1.0,
+        "n": 8
+      },
+      "('uncalibrated', 'G_45')": {
+        "parse_rate": 0.875,
+        "n": 8
+      },
+      "('uncalibrated', 'G_65')": {
+        "parse_rate": 1.0,
+        "n": 8
+      },
+      "('uncalibrated', 'L_140')": {
+        "parse_rate": 1.0,
+        "n": 8
+      },
+      "('uncalibrated', 'L_40')": {
+        "parse_rate": 0.875,
+        "n": 8
+      },
+      "('uncalibrated', 'L_90')": {
+        "parse_rate": 0.875,
+        "n": 8
+      }
+    },
+    "by_domain": {
+      "('generic', 'gain')": {
+        "parse_rate": 0.8416666666666667,
+        "n": 240
+      },
+      "('generic', 'loss')": {
+        "parse_rate": 0.9833333333333333,
+        "n": 240
+      },
+      "('region', 'gain')": {
+        "parse_rate": 0.7708333333333334,
+        "n": 432
+      },
+      "('region', 'loss')": {
+        "parse_rate": 0.9953703703703703,
+        "n": 432
+      },
+      "('uncalibrated', 'gain')": {
+        "parse_rate": 0.9583333333333334,
+        "n": 24
+      },
+      "('uncalibrated', 'loss')": {
+        "parse_rate": 0.9166666666666666,
+        "n": 24
+      }
+    },
+    "by_persona": {
+      "('generic', ('loss', 0))": {
+        "parse_rate": 0.9866666666666667,
+        "n": 75
+      },
+      "('generic', ('loss', 1))": {
+        "parse_rate": 0.9615384615384616,
+        "n": 78
+      },
+      "('generic', ('loss', 2))": {
+        "parse_rate": 1.0,
+        "n": 87
+      },
+      "('generic', ('risk', 0))": {
+        "parse_rate": 0.8717948717948718,
+        "n": 78
+      },
+      "('generic', ('risk', 1))": {
+        "parse_rate": 0.6521739130434783,
+        "n": 69
+      },
+      "('generic', ('risk', 2))": {
+        "parse_rate": 0.956989247311828,
+        "n": 93
+      },
+      "('region', 'uncalibrated')": {
+        "parse_rate": 0.9375,
+        "n": 96
+      },
+      "('region', ('loss', 0))": {
+        "parse_rate": 0.9935897435897436,
+        "n": 156
+      },
+      "('region', ('loss', 1))": {
+        "parse_rate": 0.9761904761904762,
+        "n": 126
+      },
+      "('region', ('loss', 2))": {
+        "parse_rate": 1.0,
+        "n": 150
+      },
+      "('region', ('risk', 0))": {
+        "parse_rate": 0.8604651162790697,
+        "n": 129
+      },
+      "('region', ('risk', 1))": {
+        "parse_rate": 0.49242424242424243,
+        "n": 132
+      },
+      "('region', ('risk', 2))": {
+        "parse_rate": 0.92,
+        "n": 75
+      },
+      "('uncalibrated', 'uncalibrated')": {
+        "parse_rate": 0.9375,
+        "n": 48
+      }
+    }
+  },
+  "design_note": "generic arm v2: 8 fresh independent pooled-mixture draws per country (reviewer correction); original shared-persona generic records excluded from metrics",
+  "primary": {
+    "mean_W1_region": 0.30388888888888893,
+    "mean_W1_generic": 0.2848809523809524,
+    "mean_W1_uncalibrated": 0.2941666666666667,
+    "mean_diff_generic_minus_region": -0.0190079365079365,
+    "permutation_p_one_sided": 0.630859375,
+    "n_favor_region": 3,
+    "decision": "H1 REJECTED",
+    "per_country_W1": {
+      "Iceland": {
+        "region": 0.29166666666666663,
+        "generic": 0.1805555555555556,
+        "uncalibrated": 0.44166666666666665,
+        "n_region": 4,
+        "n_generic": 3
+      },
+      "Greece": {
+        "region": 0.3125,
+        "generic": 0.45138888888888884,
+        "uncalibrated": 0.4208333333333333,
+        "n_region": 4,
+        "n_generic": 6
+      },
+      "Brazil": {
+        "region": 0.3333333333333333,
+        "generic": 0.2222222222222222,
+        "uncalibrated": 0.39999999999999997,
+        "n_region": 4,
+        "n_generic": 3
+      },
+      "Hungary": {
+        "region": 0.20000000000000004,
+        "generic": 0.16666666666666663,
+        "uncalibrated": 0.39999999999999997,
+        "n_region": 5,
+        "n_generic": 6
+      },
+      "Pakistan": {
+        "region": 0.13194444444444442,
+        "generic": 0.3541666666666667,
+        "uncalibrated": 0.25416666666666665,
+        "n_region": 3,
+        "n_generic": 4
+      },
+      "Australia": {
+        "region": 0.3458333333333334,
+        "generic": 0.22916666666666669,
+        "uncalibrated": 0.25416666666666665,
+        "n_region": 5,
+        "n_generic": 6
+      },
+      "Germany": {
+        "region": 0.17361111111111113,
+        "generic": 0.43750000000000006,
+        "uncalibrated": 0.1375,
+        "n_region": 3,
+        "n_generic": 2
+      },
+      "Japan": {
+        "region": 0.6666666666666667,
+        "generic": 0.3571428571428572,
+        "uncalibrated": 0.2,
+        "n_region": 1,
+        "n_generic": 7
+      },
+      "Denmark": {
+        "region": 0.25,
+        "generic": 0.2,
+        "uncalibrated": 0.2,
+        "n_region": 2,
+        "n_generic": 5
+      },
+      "Italy": {
+        "region": 0.3333333333333333,
+        "generic": 0.25,
+        "uncalibrated": 0.23333333333333334,
+        "n_region": 3,
+        "n_generic": 6
+      }
+    }
+  },
+  "sensitivity_drop_thin_cells": {
+    "dropped": [
+      "Denmark",
+      "Japan",
+      "Pakistan"
+    ],
+    "kept": [
+      "Iceland",
+      "Greece",
+      "Brazil",
+      "Hungary",
+      "Australia",
+      "Germany",
+      "Italy"
+    ],
+    "mean_diff": -0.007539682539682536,
+    "p_one_sided": 0.5390625,
+    "note": "exploratory; not preregistered"
+  },
+  "secondary_dispersion": {
+    "region": 8.207262582514597,
+    "generic": 11.972275328761103,
+    "ci_region": [
+      2.7905504875676295,
+      13.686172651267551
+    ],
+    "ci_generic": [
+      6.53140749500457,
+      17.361819461450995
+    ]
+  },
+  "secondary_spearman_region": {
+    "rho": 0.08589118694710286,
+    "p": 0.8134930017397664
+  },
+  "secondary_spearman_generic": {
+    "rho": 0.1834939608543934,
+    "p": 0.6118510379338833
+  },
+  "secondary_ev_gap": {
+    "ev_frac_yes": 0.6666666666666666,
+    "sim_mean_yes_region": 0.6225490196078431,
+    "sim_mean_yes_generic": 0.4791666666666667,
+    "sim_mean_yes_uncalibrated": 0.26666666666666666,
+    "real_mean_yes": 0.4999999999999999
+  },
+  "robustness": {
+    "paraphrase": {
+      "mean_diff": 0.013888888888888923,
+      "per_country": {
+        "Germany": {
+          "region_variant": 0.3263888888888889,
+          "generic_main_v2": 0.43750000000000006
+        },
+        "Italy": {
+          "region_variant": 0.3333333333333333,
+          "generic_main_v2": 0.25
+        }
+      }
+    },
+    "seed": {
+      "mean_diff": -0.013888888888888895,
+      "per_country": {
+        "Germany": {
+          "region_variant": 0.27083333333333337,
+          "generic_main_v2": 0.43750000000000006
+        },
+        "Italy": {
+          "region_variant": 0.4444444444444445,
+          "generic_main_v2": 0.25
+        }
+      }
+    },
+    "temp03": {
+      "mean_diff": 0.041666666666666685,
+      "per_country": {
+        "Germany": {
+          "region_variant": 0.3125,
+          "generic_main_v2": 0.43750000000000006
+        },
+        "Italy": {
+          "region_variant": 0.2916666666666667,
+          "generic_main_v2": 0.25
+        }
+      }
+    },
+    "lambda_only": {
+      "mean_diff": 0.20486111111111113,
+      "per_country": {
+        "Germany": {
+          "region_variant": 0.2152777777777778,
+          "generic_main_v2": 0.43750000000000006
+        },
+        "Italy": {
+          "region_variant": 0.0625,
+          "generic_main_v2": 0.25
+        }
+      }
+    }
+  },
+  "sensitivity_sd": {
+    "0.5": {
+      "mean_W1_region": 0.3129166666666667,
+      "mean_W1_generic": 0.2952976190476191,
+      "mean_diff": -0.01761904761904759
+    },
+    "1.5": {
+      "mean_W1_region": 0.3101388888888889,
+      "mean_W1_generic": 0.27863095238095237,
+      "mean_diff": -0.03150793650793654
+    }
+  }
+}

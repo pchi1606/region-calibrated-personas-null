@@ -1,0 +1,674 @@
+%%%
+%%% S12: Region-calibrated personas — preregistered null result
+%%% CogSci 2027 submission (anonymized)
+%%%
+
+\documentclass[10pt,letterpaper]{article}
+
+\usepackage{cogsci}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{amsmath}
+\usepackage[round]{natbib}
+
+% \cogscifinalcopy %%% Uncomment for camera-ready
+
+\title{Region-Calibrated Personas Do Not Significantly Improve Fit to
+CPT-Imputed Country-Level Choice Distributions:
+A Preregistered Null Result}
+
+\author{{\large \bf Anonymous} \\
+\texttt{anonymous} \\
+\hspace{1cm}Anonymized for double-blind review}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Language models are increasingly used as stand-ins for human participants
+in behavioral research, yet they are systematically \textit{more} rational
+than the people they simulate. One proposed fix infuses calibrated
+human-like irrationality at inference time; the open question is whether
+that calibration should be region-specific, given real cross-cultural
+variation in risk preferences. We preregistered exactly that test: do personas
+calibrated to \textit{region-specific} measured preference distributions
+reproduce country-level choice heterogeneity better than a generic-human
+calibration? Running Qwen3-1.7B on CPU, we simulated individual respondents
+for ten countries spanning the empirical loss-aversion distribution,
+conditioning only on distribution-sampled behavioral profiles---no country
+label, ethnicity term, or trait inventory ever appears in a prompt---and
+compared simulated choice distributions against prospect-theory-imputed
+choice distributions (deterministic predictions from reconstructed
+within-country parameter distributions, not observed human choices) on six
+held-out willingness tasks. The preregistered primary
+test (paired permutation over countries, $\alpha=0.05$) \textbf{rejects the
+hypothesis}: region-conditioned simulations average Wasserstein-1 distance
+0.304 versus 0.285 for generic calibration (difference $-0.019$; one-sided
+$p=0.631$), while the uncalibrated arm (0.294) matches about as well as
+either calibrated arm. This null concerns one small
+model under fixed protocols---not language models in
+general---and we discuss what it does and does not rule out for
+pluralistic alignment.
+
+\textbf{Keywords:}
+cultural calibration; language models; behavioral simulation; null results;
+preregistration; prospect theory
+\end{abstract}
+
+\section{Introduction}
+
+Language models are being recruited as simulated human subjects: they answer
+surveys, play economic games, and stand in for participants in market
+research \citep{argyle2023,aher2023,park2023}. The practice rests on an
+untested premise: that a model's responses reproduce the decision patterns
+of the humans it replaces. The premise fails, and it fails in a specific,
+replicable direction. Across cognitive-reflection batteries, lottery choices, and
+repeated games, models deviate from humans toward \textit{greater}
+rationality: they are too accurate \citep{aher2023}, too close to
+expected-value maximization \citep{liu2025}, and too consistent to be human
+\citep{macmillan-scott2024}. Instruction tuning can erase human-like biases
+that smaller base models display \citep{hagendorff2023}. Call this the
+\textit{rationality gap}.
+
+If the gap is the disease, the natural treatment is deliberate: install
+calibrated irrationality by prompting or steering the model until its
+measured biases match human effect sizes. Early attempts show persona
+conditioning can elicit prospect-theory signatures \citep{dubedy2026} and
+motivated reasoning in models---yet none calibrates the installed
+irrationality against measured human distributions. That generic-calibration
+problem is taken up in a companion paper. Our starting observation: even a perfectly calibrated \textit{generic}
+human is the wrong target, because human irrationality is not a single
+profile. Risk
+preferences vary substantially across countries \citep{rieger2015}, loss
+aversion varies with culture \citep{wang2017}, and the WEIRD-psychology
+literature shows that Western convenience samples are outliers on exactly
+the traits models default to \citep{henrich2010}. A simulator calibrated to
+a single human profile flattens this heterogeneity.
+
+The question we ask is narrower, and falsifiable: does calibrating
+irrationality levers \textit{region-specifically}---to measured cross-country
+preference distributions---reproduce cross-country heterogeneity in
+economic choice better than a generic-human calibration? The ground truth is
+the INTRA survey (International Test on Risk Attitudes), which elicited risk
+preferences from roughly 7,000 respondents in 53 countries
+\citep{rieger2015}, with per-country cumulative-prospect-theory parameters
+estimated in follow-up work \citep{rieger2017}. To be precise about the sense in which
+this is ``ground truth'': the choice distributions we fit are not observed
+human choices but deterministic CPT predictions computed from
+\textit{reconstructed} within-country parameter distributions
+(within-country SDs recovered from published SEs under an assumed $n=150$,
+winsorized). What we measure is therefore how well qualitative personas
+track a parametric imputation of human heterogeneity---twice removed from
+actual choices---not direct human-likeness. The full
+design---countries, levers, tasks, metrics, tests, and decision
+rules---was preregistered before any model ran, and we report the
+preregistered test exactly as specified, null outcome included.
+
+Three things come out of this work. First, a method for
+distribution-grounded regional calibration that satisfies a hard
+anti-essentialism constraint:
+levers are calibrated to measured \textit{distributions} with
+within-country variance, prompts contain individual behavioral profiles
+rather than country labels, and culture is treated as situated and
+contextual \citep{oyserman2008} rather than as fixed national character.
+Second, a preregistered empirical test---ten countries spanning the
+measured loss-aversion distribution, region-conditioned versus generic-human
+versus uncalibrated simulation on held-out willingness tasks, fit against
+prospect-theory-imputed choice distributions---that returns a null. Third, a constraint on the pluralistic-alignment agenda. Region-specific
+calibration, as implemented here, does not buy country-level fit. Along the
+way, a cautionary observation on response format: the Yes/No willingness
+format flips the usual rationality-gap pattern relative to the
+prospect-theory prediction. We report that flip as format
+sensitivity---not as a challenge to the human-data finding---and it limits
+what ``human-like'' can mean as a calibration target.
+
+\section{Related work}
+
+\subsection{The rationality gap between LLMs and humans}
+
+Excess rationality is the most reliable fidelity failure in LLM-as-human
+simulation. \citet{aher2023} named it \textit{hyper-accuracy distortion}:
+aligned models are too factually correct to reproduce human response
+distributions. The direct decision-making statement comes from
+\citet{liu2025}: against the 13,000-choice human dataset choices13k,
+GPT-4o, Claude 3 Opus, and Llama-3 models deviate from humans toward
+expected-value theory, both when simulating and when predicting choices.
+Alignment itself is partly responsible---\citet{hagendorff2023} show
+mid-scale GPT-3 gave the intuitive wrong answer on cognitive-reflection
+items about 80\% of the time (humans about 55\%), while instruction-tuned
+ChatGPT scored 59--96\% correct. The settled picture: models are
+\textit{differently} biased rather than uniformly biased
+\citep{pagliaro2026,suri2024}, and bias is a prompt--model interaction
+property, not a stable trait.
+
+\subsection{Attempts to make models irrational}
+
+Prompting can nudge models toward human-like bias, but without calibration.
+LLM ``irrationality'' is inconsistent across repeats and often non-human in
+form \citep{macmillan-scott2024}. Persona assignment does elicit motivated
+reasoning \citep{dash2025} and prospect-theory signatures---\citet{dubedy2026}
+reports GPT-4.1 with income personas reproducing the fourfold pattern
+unprompted. The closest concurrent work treats LLMs as calibrated
+measurement instruments for behavioral parameters: \citet{yee2026} induce
+large, stable shifts in loss aversion, herding, extrapolation, and anchoring
+toward human benchmark magnitudes across 24,000 agent--scenario pairs via
+profile-based calibration. Their calibration targets generic human
+benchmarks, however, not region-specific distributions, and they do not test
+whether calibration reproduces cross-country heterogeneity. We leave the
+generic-calibration problem to a companion paper and ask instead whether
+calibration should be regional.
+
+\subsection{Cross-cultural variation in economic preferences}
+
+Regional variation in irrationality is among the best-established facts in
+behavioral economics. Across 15 small-scale societies, \citet{henrich2001}
+document dramatic cross-society variation in ultimatum, dictator, and
+public-goods play; \citet{henrich2010} argue Western samples are frequent
+outliers. On risk, \citet{rieger2015} surveyed 53 countries and found risk
+aversion in gains and risk seeking in losses everywhere---but at degrees
+that differ significantly across countries. Per-country
+cumulative-prospect-theory parameters estimated by \citet{wang2017} show
+loss aversion varying systematically with culture. The largest validation is
+the Global Preference Survey: experimentally validated preference measures
+for 80,000 individuals in 76 countries, with substantial cross-country
+heterogeneity---and larger within-country heterogeneity \citep{falk2018}.
+That literature gives us our design rule directly: calibrate to
+distributions, never to country means \citep{falk2018}.
+
+\subsection{Simulating regional humans, and the stereotype trap}
+
+Country labels do shift model responses toward the target country
+\citep{durmus2023,tao2024}---but they invite exactly the failure this paper
+is designed to avoid: \citet{durmus2023} show country-perspective prompting
+can \textit{amplify} cultural stereotypes, and \citet{cheng2023a} and
+\citet{cheng2023b} document stereotyped portrayals and caricature in
+persona-conditioned generations. The constructive alternatives are all
+distribution- or retrieval-grounded. \citet{abels2026} build ``calibrated
+value personas'' from \textit{individual-level} survey responses;
+\citet{seo2025} retrieve per-individual value summaries instead of relying
+on model priors. We combine both ideas: individual-level profiles sampled
+from measured country distributions, and---critically---no country label
+anywhere in the prompt, so the model cannot fall back on training-data
+national associations. Our theoretical guardrail is \citet{oyserman2008}:
+cultural influence is situated and moment-to-moment rather than a static
+national trait, so each prompt describes one respondent's measured survey
+answers, never a national character.
+
+\section{Method}
+
+We wrote the full preregistration---countries, levers, tasks, metrics,
+tests, decision rules, anti-essentialism rules, and two amendments---before
+any model ran. What follows summarizes the design \textit{as run},
+amendments included.
+
+\subsection{Ground truth: the INTRA survey}
+
+The ideal ground truth would be the Global Preference Survey
+\citep{falk2018}, but its microdata require a data-request form and forbid
+redistribution, so we excluded it per the preregistration and fell back to
+the pre-specified alternative: the INTRA survey \citep{rieger2015}, which
+elicited willingness-to-pay for gain lotteries and willingness-to-accept for
+loss lotteries from about 7,000 economics students in 53 countries, plus
+the per-country cumulative-prospect-theory parameters estimated from it
+\citep{rieger2017}---loss aversion $\lambda$, curvature $\phi$,
+probability-weighting $\delta$. Numerical values are the published
+per-country estimates as tabulated in \citet{xie2018} (open access).
+
+The INTRA publications report per-country standard errors rather than
+individual-level data, so we reconstruct within-country distributions
+parametrically: each individual's $(\lambda_i,\phi_i,\delta_i)$ is drawn
+from a truncated normal centered on the published country estimates, with
+$\mathrm{SD}=\mathrm{SE}\times\sqrt{n}$, $n=150$ (median INTRA per-country
+sample size), winsorized to published ranges and $\lambda$ truncated at
+0.02 (Iceland's published $\lambda=-0.112$ becomes small-positive draws;
+disclosed). Absolute fit levels depend on this reconstruction, but the
+region-versus-generic comparison does not---both arms draw from the same
+reconstructed family---and sensitivity analyses scaling all within-SDs by
+0.5 and 1.5 leave the ordering unchanged.
+
+\subsection{Country selection}
+
+We selected ten countries stratified across the empirical loss-aversion
+distribution ($\lambda$ is the prospect-theory parameter shown to vary most
+with culture, \citet{wang2017}): Iceland ($-0.11$), Greece ($0.33$), Brazil
+($0.60$), Hungary ($0.93$), Pakistan ($1.20$), Australia ($1.65$), Germany
+($1.90$), Japan ($1.93$), Denmark ($2.21$), Italy ($3.35$). Nothing but
+these published numbers drove the selection.
+
+\subsection{Elicitation and calibration levers (Amendment 2)}
+
+Pilot diagnostics forced an elicitation redesign before any main-run
+generation (preregistered Amendment 2). The chat template produced
+degenerate label bias---near-deterministic single-label outputs regardless
+of profile---which raw completion removes. Binary A/B choices proved
+content-insensitive to numerical certainty-equivalent profiles: first-token
+choice probabilities came out near-identical for Italy-like versus
+Hungary-like profiles. The final elicitation is therefore \textbf{raw
+completion} (no chat template) with \textbf{qualitative 3-level personas}
+and \textbf{Yes/No willingness questions}: e.g.\ ``Would you pay \$45 for a
+50/50 chance to win \$100? Answer:'' with the first Yes/No token parsed.
+
+Each simulated individual draws $(\lambda_i,\phi_i,\delta_i)$ either from
+their country's reconstructed distribution (\textbf{region} arm) or from
+the pooled multi-country mixture (\textbf{generic} arm); the draw is then
+mapped to a qualitative persona via absolute tertile cutoffs from the
+pooled reconstructed distribution. That mapping yields three risk
+sentences (from curvature $\phi$, used on gain tasks) and three loss
+sentences (from loss aversion $\lambda$, used on loss tasks), e.g.\ ``You
+are very cautious with money. You strongly prefer guaranteed amounts over
+any gamble.'' The \textbf{uncalibrated} arm sees the question with no
+persona. No prompt in any arm contains a country name, an ethnicity term,
+or a trait inventory---a scripted audit verifies this over all prompt
+templates and all 1,392 generations (0 hits).
+
+\subsection{Decision tasks}
+
+We held out six Yes/No willingness tasks with prices fixed across
+individuals, spanning the human certainty-equivalent range: pay \$25, \$45,
+or \$65 for a 50/50 chance to win \$100 (gain); accept a 50/50 chance of
+losing \$100 if paid \$40, \$90, or \$140 (loss). Each simulated
+individual's ``real'' counterpart is the deterministic choice implied by the
+$(\lambda_i,\phi_i,\delta_i)$ drawn for that individual under cumulative
+prospect theory \citep{kahneman1979,tversky1992}: yes on a gain task iff
+$\mathrm{price} \le 100\cdot0.5^{\phi_i}$; yes on a loss task iff
+$\mathrm{price} \ge 100\cdot(0.5\lambda_i)^{\phi_i}$. We use the
+Tversky--Kahneman one-parameter weighting form because the exact form in
+\citet{rieger2017} is not public (disclosed assumption).
+
+\subsection{Model and scale}
+
+We ran Qwen3-1.7B (Q4\_K\_M GGUF) with CPU-only inference via llama.cpp
+(temperature 0.7, top\_p 0.8, top\_k 20, max\_tokens 24, n\_ctx 1024---reduced
+from the preregistered 64 and 2048 under Amendment~2's elicitation redesign,
+which replaced the chat template and its \texttt{/no\_think} suffix with raw
+completion). The preregistered scale after Amendment (N\_INDIV $16\to8$,
+to bound CPU time) is 8 individuals $\times$ 10 countries $\times$ 2
+conditioned arms $\times$ 6 tasks $=$ 960 main generations, plus 48
+uncalibrated baseline generations and 384 robustness generations (prompt
+paraphrase, seed variant, temperature 0.3, and a loss-aversion-only
+ablation, on Germany and Italy): 1,392 generations in total. Seeds are
+deterministic (master seed 20261008); A/B option order does not apply in
+the Yes/No format.
+
+\subsection{Metrics and preregistered tests}
+
+Our \textbf{primary} metric is the per-country Wasserstein-1 distance
+between the simulated per-individual risky-choice distribution and the
+prospect-theory-imputed distribution, averaged over the ten countries; the
+preregistered test is a one-sided paired permutation test (10 country
+pairs, exact $2^{10}$) of $W_1(\mathrm{generic}) - W_1(\mathrm{region}) > 0$
+at $\alpha=0.05$. Note that with 10 pairs the exact permutation
+distribution has granularity $1/1024$, so the one-sided $p$ is coarse by
+construction. \textbf{H1}---region-conditioned calibration yields smaller
+distributional distance than generic calibration---is supported iff this
+test rejects in the predicted direction; otherwise it stands rejected.
+Secondary metrics, each reported with 95\% bootstrap confidence intervals,
+are (a) within-country dispersion preservation; (b) between-country
+heterogeneity, as the Spearman rank correlation of country means; and (c)
+the EV-alignment gap. Every metric is gated on the output-completeness
+check (all 1,392 expected generations present).
+
+After the main run we found and fixed two analysis bugs (the script had
+never been exercised end-to-end): a country filter that emptied the pooled
+generic arm, and a replicate-grouping error on the generic arm's 8-persona
+$\times$ 10-replicate structure. Independent review then surfaced a deeper
+problem no analysis fix could cure. The generic arm had reused the same 8
+personas identically across all 10 countries, so its per-country $W_1$
+estimates shared one simulated distribution by construction---correlating
+the paired differences and leaving the generic arm with zero
+between-country variation by design. Since this is a data-structure defect,
+we re-ran the generic arm with 8 fresh independent draws from the pooled
+mixture \textit{per country} (80 individuals total;
+\texttt{code/run\_generic\_v2.py})---the reading of the preregistration's
+``drawn from the POOLED 27-country distribution'' that gives each country
+an independent generic estimate at the same $n$ as the region arm.
+Everything else (elicitation, tasks, model, sampling parameters) is
+identical; only the persona-draw keys and generation seeds are per-country.
+All generic-arm results below use this corrected data, while the original
+shared-persona records are retained unmodified as an audit trail. The
+preregistered hypotheses, metrics, and decision rule are unchanged, and a
+one-command reproduction package (code, data, verifier;
+\texttt{bash reproduce.sh}) accompanies the paper so every number below
+can be re-verified independently.
+
+\section{Results}
+
+The corrected dataset contains all 1,392 expected generations (48/48
+baseline, 480/480 region + 480/480 corrected generic, 384/384 robustness),
+with parse rates (first Yes/No token found) of 93.8\% baseline, 88.3\%
+region, and 91.2\% corrected generic. The no-label audit comes back clean:
+0 hits across prompt templates, all prompts, and all 1,392 generations.
+
+\subsection{Primary test: H1 rejected}
+
+\begin{table}[t]
+\centering
+\caption{Per-country Wasserstein-1 distance of simulated to
+prospect-theory-imputed choice distributions, by arm. Lower is better.
+$n_R$ / $n_G$ = complete region / generic individuals after parse failures
+(generic arm: corrected per-country independent draws).}
+\label{tab:w1}
+\begin{tabular}{lccccc}
+\toprule
+Country & Region & Generic & Uncalibrated & $n_R$ & $n_G$ \\
+\midrule
+Iceland & 0.292 & 0.181 & 0.442 & 4 & 3 \\
+Greece & 0.312 & 0.451 & 0.421 & 4 & 6 \\
+Brazil & 0.333 & 0.222 & 0.400 & 4 & 3 \\
+Hungary & 0.200 & 0.167 & 0.400 & 5 & 6 \\
+Pakistan & 0.132 & 0.354 & 0.254 & 3 & 4 \\
+Australia & 0.346 & 0.229 & 0.254 & 5 & 6 \\
+Germany & 0.174 & 0.438 & 0.138 & 3 & 2 \\
+Japan & 0.667 & 0.357 & 0.200 & 1 & 7 \\
+Denmark & 0.250 & 0.200 & 0.200 & 2 & 5 \\
+Italy & 0.333 & 0.250 & 0.233 & 3 & 6 \\
+\midrule
+Mean & 0.304 & 0.285 & 0.294 & & \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+The three arms land almost on top of each other: mean $W_1$ 0.304 for
+region, 0.285 for generic, 0.294 for uncalibrated. The paired difference
+(generic $-$ region) is $-0.019$, with region favored in only 3 of 10
+countries; the one-sided exact permutation test returns $p=0.631$, far from
+$\alpha=0.05$. \textbf{H1 is rejected.} We report this as a null, plainly:
+no detectable region advantage, and the uncalibrated arm matches about as
+well as either calibrated arm---on this metric, calibration adds nothing
+over no persona at all. An exploratory sensitivity check that drops the
+three thinnest region cells (Japan, Denmark, Pakistan) agrees
+(diff $-0.008$, $p=0.539$ on 7 countries).
+
+\subsection{Secondary results}
+
+\textbf{Robustness.} Across Germany and Italy, none of the four elicitation
+variants gives the region variant a consistent edge over the corrected
+generic: paraphrase $+0.014$, seed $-0.014$, temperature 0.3 $+0.042$,
+loss-aversion-only ablation $+0.205$ (mean $W_1$ differences,
+generic $-$ region-variant). Only the ablation shows a sizable gap---on two
+countries, so suggestive rather than confirmatory.
+
+\textbf{EV-alignment.} Mean share of ``yes'' answers comes out as 0.62 for
+region, 0.48 for generic, 0.27 for uncalibrated, 0.50 for
+prospect-theory-imputed, and 0.67 for EV-optimal. The region arm answers at
+roughly the EV-optimal rate, the corrected generic arm near the
+human-predicted rate, and the uncalibrated arm is strongly yes-averse. That
+runs counter to the preregistered baseline expectation---the classic
+rationality gap, with the uncalibrated model more EV-rational than humans.
+We do \textit{not} read this as a non-replication of \citet{liu2025}. Their
+finding rests on actual human choices (choices13k) on lottery tasks; ours
+compares a raw-completion Yes/No format against a synthetic CPT baseline.
+The flip is a cautionary observation about format sensitivity, not evidence
+against the published gap.
+
+\textbf{Dispersion and heterogeneity.} Within-country dispersion
+preservation carries no information here: several country cells have
+near-degenerate simulated distributions, which blows up the log-ratio
+(region 8.2, generic 12.0, with enormous bootstrap CIs). Between-country
+heterogeneity is null in both arms---Spearman $\rho=0.09$ ($p=0.81$) for
+region, $\rho=0.18$ ($p=0.61$) for generic---with no detectable tracking of
+real between-country differences. (Thanks to the corrected per-country
+generic draws this comparison is now fair; in the original shared-persona
+implementation it was degenerate by construction.)
+
+\section{Discussion}
+
+The preregistered bet fails its own test: region-calibrated personas do
+not significantly improve fit to country-level choice distributions, and
+the uncalibrated baseline matches about as well as either calibrated arm.
+The null has three layers, and each teaches something different.
+
+First, the null itself is clean. Under the corrected generic arm there is
+no directional hint of a region advantage: paired difference $-0.019$ (3 of
+10 countries favor region), $p=0.631$, and the exploratory thin-cell
+sensitivity agrees. An earlier analysis had shown a suggestive $+0.072$
+($p=0.090$), but that signal was partly an artifact of the shared-persona
+structure---with independent per-country generic draws, it vanishes. A
+null, not a near-miss, and we claim nothing more.
+
+Second---and more damaging---is the \textit{uncalibrated} half of the
+null. Genuine calibration signal should separate the region arm from the
+no-persona baseline; instead the two tie (0.304 vs.\ 0.294). Whatever the
+personas contribute gets swamped by the model's decisive answering style:
+simulated per-individual distributions come out extreme-heavy (many 0.0 or
+1.0 values), so the model delivers verdicts rather than graded
+propensities. On this metric, in this format, the persona is nearly inert.
+
+Third, a caution about the rationality gap. The literature's reliable
+finding---models more EV-rational than humans \citep{liu2025}---is measured
+against actual human choices. Our comparison runs against a synthetic CPT
+baseline in a raw-completion Yes/No format, so the flipped pattern
+(uncalibrated yes-averse at 0.27 vs.\ predicted 0.50) is an
+apples-to-oranges contrast. We report it as evidence that response format
+shapes what ``human-like'' even means---a complication for any calibration
+agenda built on the gap---rather than as a challenge to the published
+finding.
+
+For pluralistic alignment, what we have is a boundary condition, not a
+verdict: region-specific calibration \textit{as implemented here}---small
+model, qualitative personas, willingness format---does not buy
+country-level fit. Concretely, Amendment~2 collapsed continuous
+$(\lambda,\phi)$ draws into three fixed qualitative sentences via pooled
+tertiles, so the region and generic arms differ only in mixture weights
+over identical sentences. The null is therefore joint over the hypothesis
+\textit{and} this coarse transmission channel---a finer-grained persona
+could in principle carry distributional signal that three sentences
+cannot. This does not show that no regional calibration could work. It
+shows that the cheapest version does not, and that claims about
+``culturally calibrated'' simulators need preregistered tests with this
+structure before they are believed.
+
+\paragraph{Concurrent work disclosure.}
+Independently, \citet{yee2026} develop profile-based calibration of
+behavioral parameters (loss aversion, herding, extrapolation, anchoring)
+in LLMs against generic human benchmarks, documenting the same baseline
+rationality bias this literature reports; their work appeared on arXiv in
+February 2026, before this paper's experiments were run (October 2026).
+Where we differ is in testing \textit{region-specific} calibration to
+measured cross-country distributions---questions \citet{yee2026} do not
+address. A second concurrent audit reaches a compatible verdict at much
+larger scale. \citet{chen2026} construct one-to-one ``digital twin''
+personas for 67,201 Global Preference Survey respondents across 74
+countries and find LLM-simulated responses explaining only about 1.3\% of
+individual-level and 4.2\% of country-level variance in human economic
+preferences; in ablations, removing the country label from the persona
+barely changes alignment, while removing demographic cues degrades it
+substantially. That models condition on explicit persona content rather
+than on latent country associations is consistent both with our no-label
+design and with our result that region-calibrated behavioral profiles add
+little over an uncalibrated baseline.
+
+\section{Limitations}
+
+Several limits deserve plain statement. The most serious is cell
+thinning: parse failures (11.7\% on the corrected main run) left region
+cells with 1--5 complete individuals per country (Japan: $n=1$), and a
+$W_1$ distance computed from a single draw is not a distribution
+estimate---so the primary test's inputs are degraded at exactly the
+noisiest cells, which the paired test accounts for only partially.
+Dropping unparseable generations was a forced, non-preregistered choice,
+and the missingness is non-random on top of that: failures concentrate on
+gain tasks (up to 29\% on the \$65 gain task vs.\ near-zero on loss tasks)
+and on the middle risk persona (``somewhat cautious'' parses at 49--65\%
+vs.\ 86--100\% for the extreme levels). Cell thinning is therefore not
+ignorable---though the exploratory thin-cell sensitivity (dropping Japan,
+Denmark, Pakistan) agrees with the main result. A second caveat concerns
+the generic-arm correction: while it implements the preregistration's
+per-individual pooled draws, it required new data collection after the
+original results were seen. It is a reviewer-mandated repair rather than a
+preregistered step, and a fully preregistered replication would re-run both
+arms. Third, Qwen3-1.7B is a
+small model on CPU, and larger models may show different calibration
+dynamics. Fourth, the Yes/No willingness format (Amendment 2) elicits more
+coarsely than the preregistered lottery-choice format; format effects are
+visible in the flipped rationality-gap pattern. Fifth, the ``real'' choice
+distributions are deterministic prospect-theory predictions from
+reconstructed---not observed---within-country parameter distributions,
+twice removed from actual human choices. The within-SD sensitivity check
+moves the paired difference only from $-0.018$ to $-0.032$ (ordering
+unchanged), but absolute fit levels remain fragile to the reconstruction.
+The INTRA samples, sixth, are economics students rather than
+representative populations, and within-country distributions are
+reconstructed from published standard errors rather than observed
+microdata. Finally, the exact probability-weighting form in
+\citet{rieger2017} is not public; the Tversky--Kahneman form used here is
+a disclosed assumption.
+
+\section{Conclusion}
+
+We preregistered a clean test of a natural hypothesis---that calibrating
+LLM personas to region-specific measured preference distributions
+reproduces country-level choice heterogeneity better than a generic-human
+calibration. Run on Qwen3-1.7B, the test returned a null: with the
+corrected per-country generic arm, the paired difference is $-0.019$
+($p=0.631$)---no detectable region advantage, and calibration adds nothing
+over an uncalibrated baseline (0.304 vs.\ 0.285 vs.\ 0.294). The null's
+value is discipline. It tells the pluralistic-alignment agenda what the
+cheapest version of regional calibration does \textit{not} buy, under
+exactly the conditions a preregistration makes checkable. If culturally
+calibrated simulators are to be more than a slogan, they will need to pass
+tests built with this structure.
+
+\section*{Declaration of generative AI use}
+
+The author used the AI tool Muse (Muse Spark 1.3, Meta) for drafting,
+grammatical editing, code validation, and literature search. The contents
+are reviewed, edited, and attested for accuracy by the author.
+
+\begin{thebibliography}{99}
+
+\bibitem[Abels et al.(2026)]{abels2026}
+Abels, T., et al. (2026). Improving cross-cultural survey simulation with
+calibrated value personas. \textit{arXiv:2605.16193}.
+
+\bibitem[Aher et al.(2023)]{aher2023}
+Aher, G., Arriaga, R.~I., \& Kalai, A.~T. (2023). Using large language models
+to simulate multiple humans. In \textit{Proc.\ ICML 2023}.
+
+\bibitem[Argyle et al.(2023)]{argyle2023}
+Argyle, L.~P., et al. (2023). Out of one, many: Using language models to
+simulate multiple humans. In \textit{Political Analysis, 31}(3), 337--351.
+
+\bibitem[Chen et al.(2026)]{chen2026}
+Chen, F., et al. (2026). Simulated responses from large language models are
+weak proxies for human economic preferences across 74 countries.
+\textit{Nature Human Behaviour}.
+https://doi.org/10.1038/s41562-026-02611-4
+
+\bibitem[Cheng et al.(2023a)]{cheng2023a}
+Cheng, M., Durmus, E., \& Jurafsky, D. (2023). Marked personas: Using
+natural language prompts to measure stereotypes in language models.
+In \textit{Proc.\ ACL 2023}.
+
+\bibitem[Cheng et al.(2023b)]{cheng2023b}
+Cheng, M., Piccardi, T., \& Yang, D. (2023). CoMPosT: Characterizing and
+evaluating caricature in LLM simulations. In \textit{Proc.\ EMNLP 2023}.
+
+\bibitem[Dash et al.(2025)]{dash2025}
+Dash, S., Reymond, A., Spiro, E.~S., \& Caliskan, A. (2025).
+Persona-assigned large language models exhibit human-like motivated
+reasoning. \textit{arXiv:2506.20020}.
+
+\bibitem[Dubedy(2026)]{dubedy2026}
+Dubedy, S. (2026). Persona-conditioned risk behavior in LLMs.
+\textit{arXiv:2603.15831}.
+
+\bibitem[Durmus et al.(2023)]{durmus2023}
+Durmus, E., et al. (2023). Towards measuring the representation of subjective
+global opinions in language models. In \textit{Proc.\ COLM 2024}.
+
+\bibitem[Falk et al.(2018)]{falk2018}
+Falk, A., Becker, A., Dohmen, T., Enke, B., Huffman, D., \& Sunde, U. (2018).
+Global evidence on economic preferences. \textit{Quarterly Journal of
+Economics, 133}(4), 1645--1692.
+
+\bibitem[Hagendorff et al.(2023)]{hagendorff2023}
+Hagendorff, T., Fabi, S., \& Kosinski, M. (2023). Human-like intuitive
+behavior and reasoning biases emerged in large language models but
+disappeared in ChatGPT. \textit{Nature Computational Science, 3}(10),
+833--838.
+
+\bibitem[Henrich et al.(2001)]{henrich2001}
+Henrich, J., et al. (2001). In search of homo economicus: Behavioral
+experiments in 15 small-scale societies. \textit{American Economic Review,
+91}(2), 73--78.
+
+\bibitem[Henrich et al.(2010)]{henrich2010}
+Henrich, J., Heine, S.~J., \& Norenzayan, A. (2010). The weirdest people in
+the world? \textit{Behavioral and Brain Sciences, 33}(2--3), 61--83.
+
+\bibitem[Kahneman \& Tversky(1979)]{kahneman1979}
+Kahneman, D., \& Tversky, A. (1979). Prospect theory: An analysis of decision
+under risk. \textit{Econometrica, 47}(2), 263--291.
+
+\bibitem[Liu et al.(2025)]{liu2025}
+Liu, A., Geng, M., Peterson, J.~C., Sucholutsky, I., \& Griffiths, T.~L.
+(2025). Large language models assume people are more rational than we really
+are. In \textit{Proc.\ ICLR 2025}.
+
+\bibitem[Macmillan-Scott \& Musolesi(2024)]{macmillan-scott2024}
+Macmillan-Scott, T., \& Musolesi, M. (2024). (Ir)rationality and cognitive
+biases in large language models. \textit{Royal Society Open Science}.
+
+\bibitem[Oyserman \& Lee(2008)]{oyserman2008}
+Oyserman, D., \& Lee, S.~W.~S. (2008). Does culture influence what and how we
+think? Effects of priming individualism and collectivism. \textit{Psychological
+Bulletin, 134}(2), 311--342.
+
+\bibitem[Pagliaro(2026)]{pagliaro2026}
+Pagliaro, A. (2026). Cognitive biases in large language models: A systematic
+quantitative assessment and debiasing analysis. \textit{Electronics, 15}(11),
+2428.
+
+\bibitem[Park et al.(2023)]{park2023}
+Park, J.~S., et al. (2023). Generative agents: Interactive simulacra of human
+behavior. In \textit{Proc.\ UIST 2023}.
+
+\bibitem[Rieger et al.(2015)]{rieger2015}
+Rieger, M.~O., Wang, M., \& Hens, T. (2015). Risk preferences around the
+world. \textit{Management Science, 61}(3), 637--648.
+
+\bibitem[Rieger et al.(2017)]{rieger2017}
+Rieger, M.~O., Wang, M., \& Hens, T. (2017). Estimating cumulative prospect
+theory parameters from an international survey. \textit{Theory and Decision,
+82}(4), 567--596.
+
+\bibitem[Seo et al.(2025)]{seo2025}
+Seo, M., Yuan, Y., \& Bu, Y. (2025). ValuesRAG: Enhancing cultural alignment
+of large language models. \textit{arXiv:2501.01031}.
+
+\bibitem[Suri et al.(2024)]{suri2024}
+Suri, G., Slater, L.~R., Ziaee, A., \& Nguyen, J.~K. (2024). Do large
+language models show decision heuristics similar to humans? \textit{Journal of
+Experimental Psychology: General, 153}(4), 1066--1075.
+
+\bibitem[Tao et al.(2024)]{tao2024}
+Tao, Y., et al. (2024). Cultural bias and cultural alignment of large language
+models. \textit{PNAS Nexus, 3}(9), pgae346.
+
+\bibitem[Tversky \& Kahneman(1992)]{tversky1992}
+Tversky, A., \& Kahneman, D. (1992). Advances in prospect theory: Cumulative
+representation of uncertainty. \textit{Journal of Risk and Uncertainty, 5}(4),
+287--297.
+
+\bibitem[Wang et al.(2017)]{wang2017}
+Wang, M., Rieger, M.~O., \& Hens, T. (2017). The impact of culture on loss
+aversion. \textit{Journal of Behavioral Decision Making, 30}(2), 270--281.
+
+\bibitem[Xie et al.(2018)]{xie2018}
+Xie, Y., Hwang, S., \& Pantelous, A.~A. (2018). Loss aversion around the
+world: Empirical evidence from pension funds. \textit{Journal of Banking \&
+Finance, 88}, 52--62. https://doi.org/10.1016/j.jbankfin.2017.11.007
+Table values used for per-country INTRA parameter transcription.
+
+\bibitem[Yee \& Koh(2026)]{yee2026}
+Yee, B., \& Koh, P. (2026). Calibrating behavioral parameters with large
+language models. \textit{arXiv:2602.01022} [econ.GN]. Concurrent independent
+work on profile-based calibration of behavioral parameters to generic human
+benchmarks; it does not test region-specific calibration or cross-country
+heterogeneity.
+
+\end{thebibliography}
+
+\end{document}
